@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-markerSize = 7
+markerSize = 5
 markerNumber = 50
 
 def generate(number):
