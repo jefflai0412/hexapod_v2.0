@@ -1,5 +1,4 @@
 import cv2
-import math
 import numpy as np
 
 dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_50)
