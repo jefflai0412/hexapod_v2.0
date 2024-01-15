@@ -1,7 +1,36 @@
 #include "main.h"
 #include <math.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <Wire.h>
 
+//==============================================================================
+//                             servo defines
+//==============================================================================
+#define SERVO_FREQ 50  // servo frequency
+#define SERVOMIN  105  // the minimun physical limit(after testing)
+#define SERVOMAX  505
+
+#define servo1_1 0
+#define servo1_2 1
+#define servo1_3 2
+#define servo2_1 3
+#define servo2_2 4
+#define servo2_3 5
+#define servo3_1 6
+#define servo3_2 7
+#define servo3_3 8
+#define servo4_1 9
+#define servo4_2 10
+#define servo4_3 11
+#define servo5_1 12
+#define servo5_2 13
+#define servo5_3 14
+#define servo6_1 15
+#define servo6_2 16
+#define servo6_3 17
+//==============================================================================
+//                                  END
+//==============================================================================
 //==============================================================================
 //                               全域變數
 //==============================================================================
@@ -100,10 +129,6 @@ void interpolate(int step_num, float radian_dir) {
                  moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
                  moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
     }
-    // Serial.printf("interpolate_num:%d ||X:%f, Y:%f, Z:%f \n ", i,
-    //               moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
-    //               moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
-    //               moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
     yield();  // 等所有servo都到定點再繼續下個動作
   }
 }
@@ -132,6 +157,7 @@ void coor2angle(int leg_num, float X, float Y, float Z) {
 //==============================================================================
 
 void angle2servo(int leg_num, float j1, float j2, float j3) {
+
   // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
 }
 //==============================================================================
