@@ -27,6 +27,8 @@ float moving_cycle_lenth = 4;  // 整個循環的長度
 int interpolate_num = 10.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
+
+int step_delay = 1000;  //每一步之間的間隔
 //==============================================================================
 //                                  END
 //==============================================================================
@@ -58,6 +60,8 @@ void loop() {
 void move(float dir) {
   for (int step = 0; step < moving_cycle_lenth; step++) {
     interpolate(step, radian_dir);
+    Serial.println(step);
+    delay(step_delay);
   }
 }
 //==============================================================================
@@ -81,8 +85,6 @@ void interpolate(int step_num, float radian_dir) {
   if (last_step_num == -1)  // 0的上一步是3
     last_step_num = 3;
 
-  Serial.printf("last_step:%d, step_num:%d\n", last_step_num, step_num);
-
   // 計算兩步之間的差值
   float difference[3] = {
     moving_cycle[step_num][0] - moving_cycle[last_step_num][0],
@@ -94,14 +96,14 @@ void interpolate(int step_num, float radian_dir) {
     for (int leg_num = 0; leg_num < 6; leg_num++) {
 
       coor2angle(leg_num,
-                 moving_cycle[step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
-                 moving_cycle[step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
-                 moving_cycle[step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
+                 moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
+                 moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
+                 moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
     }
-    Serial.printf("interpolate_num:%d ||X:%f, Y:%f, Z:%f \n ", i,
-                  moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
-                  moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
-                  moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
+    // Serial.printf("interpolate_num:%d ||X:%f, Y:%f, Z:%f \n ", i,
+    //               moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
+    //               moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
+    //               moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
     yield();  // 等所有servo都到定點再繼續下個動作
   }
 }
@@ -113,12 +115,12 @@ void interpolate(int step_num, float radian_dir) {
 //                                關節角度
 //==============================================================================
 void coor2angle(int leg_num, float X, float Y, float Z) {
-  // Serial.printf("X:%f, Y:%f, Z:%f  ||  ", X, Y, Z);
+  // Serial.printf("leg:%d, X:%f, Y:%f, Z:%f  ||  \n",leg_num, X, Y, Z);
   float j1 = atan(Y / X);
   float X_prime = (X / cos(j1)) - l1;
   float j3 = acos((pow(X_prime, 2) + pow(Z, 2) - pow(l2, 2) - pow(l3, 2)) / (2 * l2 * l2));
   float j2 = atan(Z / X_prime) - atan((l3 * sin(j3)) / (l2 + l3 * cos(j3)));
-
+  Serial.printf("j1:%f, j2:%f, j3:%f\n", j1, j2, j3);
   angle2servo(leg_num, j1, j2, j3);
 }
 //==============================================================================
