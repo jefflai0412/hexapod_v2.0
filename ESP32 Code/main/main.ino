@@ -7,8 +7,8 @@
 //                             servo defines
 //==============================================================================
 #define SERVO_FREQ 50  // servo frequency
-#define SERVOMIN  105  // the minimun physical limit(after testing)
-#define SERVOMAX  505
+#define SERVOMIN 105   // the minimun physical limit(after testing)
+#define SERVOMAX 505
 
 #define servo1_1 0
 #define servo1_2 1
@@ -36,7 +36,7 @@
 //==============================================================================
 // 待修改 (末端到j1的相對座標)
 float initial_point[6][3] = {
-  { 52.141, 5.735, -41.747 },
+  { 57.385, 0, -76.814 },
   { 0, 0, 0 },
   { 0, 0, 0 },
   { 0, 0, 0 },
@@ -45,7 +45,7 @@ float initial_point[6][3] = {
 };
 
 float step_size = 10;   //代表每隻腳的圓的半徑
-float step_height = 5;  //每次腳要抬高的高度
+float step_height = 10;  //每次腳要抬高的高度
 
 float l1 = 0;       // 第一個link的長度
 float l2 = 50;      // 第二個link的長度
@@ -88,8 +88,8 @@ void loop() {
 //==============================================================================
 void move(float dir) {
   for (int step = 0; step < moving_cycle_lenth; step++) {
+    Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n",step);
     interpolate(step, radian_dir);
-    Serial.println(step);
     delay(step_delay);
   }
 }
@@ -140,13 +140,13 @@ void interpolate(int step_num, float radian_dir) {
 //                                關節角度
 //==============================================================================
 void coor2angle(int leg_num, float X, float Y, float Z) {
-  // Serial.printf("leg:%d, X:%f, Y:%f, Z:%f  ||  \n",leg_num, X, Y, Z);
-  float j1 = atan(Y / X);
-  float X_prime = (X / cos(j1)) - l1;
-  float j3 = acos((pow(X_prime, 2) + pow(Z, 2) - pow(l2, 2) - pow(l3, 2)) / (2 * l2 * l2));
-  float j2 = atan(Z / X_prime) - atan((l3 * sin(j3)) / (l2 + l3 * cos(j3)));
+  Serial.printf("X:%f, Y:%f, Z:%f  ||  \n", X, Y, Z);
+  double j1 = atan(Y / X);
+  double X_prime = (X / cos(j1)) - l1;
+  double j3 = -((acos((pow(X_prime, 2) + pow(Z, 2) - pow(l2, 2) - pow(l3, 2)) / (2 * l2 * l2))));
+  double j2 = (atan(Z / X_prime) - atan((l3 * sin(j3)) / (l2 + l3 * cos(j3))));
   Serial.printf("j1:%f, j2:%f, j3:%f\n", j1, j2, j3);
-  angle2servo(leg_num, j1, j2, j3);
+  // angle2servo(leg_num, j1, j2, j3);
 }
 //==============================================================================
 //                                  END

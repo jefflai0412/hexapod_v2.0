@@ -3,12 +3,13 @@
 #include "math.h"
 
 #define SERVO_FREQ 50  // servo frequency
+#define SERVOMIN  105  // the minimun physical limit(after testing)
+#define SERVOMAX  505 
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 
 
-int SERVOMIN = 70;
-int SERVOMAX = 525;
+
 
 void setup() {
   Serial.begin(9600);
@@ -18,6 +19,10 @@ void setup() {
 
 
 void loop() {
+  sweep();
+}
+
+void limit_test() {
   if (Serial.available()) {
     char command = Serial.read();
     if (command == '+') {
@@ -32,4 +37,13 @@ void loop() {
   float angle = 0;
   int setPWM_value = map(angle, 0, M_PI, SERVOMIN, SERVOMAX);
   board1.setPWM(2, 0, setPWM_value);
+}
+
+void sweep() {
+  board1.setPWM(2, 0, SERVOMIN);
+  Serial.printf("SERVOMIN:%d\n", SERVOMIN);
+  delay(1000);
+  board1.setPWM(2, 0, SERVOMAX);
+  Serial.printf("SERVOMAX:%d\n", SERVOMAX);
+  delay(1000);
 }
