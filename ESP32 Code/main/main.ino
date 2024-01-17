@@ -44,7 +44,7 @@ float initial_point[6][3] = {
   { 0, 0, 0 }
 };
 
-float step_size = 10;   //代表每隻腳的圓的半徑
+float step_size = 10;    //代表每隻腳的圓的半徑
 float step_height = 10;  //每次腳要抬高的高度
 
 float l1 = 0;       // 第一個link的長度
@@ -53,11 +53,14 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 10.00;  // 將每步切成幾部分
+int interpolate_num = 2.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
 
 int step_delay = 1000;  //每一步之間的間隔
+
+Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
+
 //==============================================================================
 //                                  END
 //==============================================================================
@@ -75,6 +78,8 @@ void angle2servo(int servo_num, float j1, float j2, float j3);
 
 void setup() {
   Serial.begin(9600);
+  board1.begin();
+  board1.setPWMFreq(SERVO_FREQ);
 }
 
 void loop() {
@@ -88,7 +93,7 @@ void loop() {
 //==============================================================================
 void move(float dir) {
   for (int step = 0; step < moving_cycle_lenth; step++) {
-    Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n",step);
+    Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n", step);
     interpolate(step, radian_dir);
     delay(step_delay);
   }
@@ -140,13 +145,11 @@ void interpolate(int step_num, float radian_dir) {
 //                                關節角度
 //==============================================================================
 void coor2angle(int leg_num, float X, float Y, float Z) {
-  Serial.printf("X:%f, Y:%f, Z:%f  ||  \n", X, Y, Z);
   double j1 = atan(Y / X);
   double X_prime = (X / cos(j1)) - l1;
   double j3 = -((acos((pow(X_prime, 2) + pow(Z, 2) - pow(l2, 2) - pow(l3, 2)) / (2 * l2 * l2))));
   double j2 = (atan(Z / X_prime) - atan((l3 * sin(j3)) / (l2 + l3 * cos(j3))));
-  Serial.printf("j1:%f, j2:%f, j3:%f\n", j1, j2, j3);
-  // angle2servo(leg_num, j1, j2, j3);
+  angle2servo(leg_num, j1, j2, j3);
 }
 //==============================================================================
 //                                  END
@@ -157,8 +160,16 @@ void coor2angle(int leg_num, float X, float Y, float Z) {
 //==============================================================================
 
 void angle2servo(int leg_num, float j1, float j2, float j3) {
-
-  // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
+  // test
+  if (leg_num == 0) {
+    int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j2 = (j2 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j3 = (j3 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    board1.setPWM(0, 0, pwm_j1);
+    board1.setPWM(1, 0, pwm_j2);
+    board1.setPWM(2, 0, pwm_j3);
+    Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
+  }
 }
 //==============================================================================
 //                                  END
