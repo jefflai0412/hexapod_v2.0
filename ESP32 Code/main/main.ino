@@ -7,8 +7,8 @@
 //                             servo defines
 //==============================================================================
 #define SERVO_FREQ 50  // servo frequency
-#define SERVOMIN 105   // the minimun physical limit(after testing)
-#define SERVOMAX 505
+#define SERVOMIN 77   // the minimun physical limit(after testing)
+#define SERVOMAX 485
 
 #define servo1_1 0
 #define servo1_2 1
@@ -44,8 +44,8 @@ float initial_point[6][3] = {
   { 0, 0, 0 }
 };
 
-float step_size = 10;    //代表每隻腳的圓的半徑
-float step_height = 10;  //每次腳要抬高的高度
+float step_size = 20;    //代表每隻腳的圓的半徑
+float step_height = 20;  //每次腳要抬高的高度
 
 float l1 = 0;       // 第一個link的長度
 float l2 = 50;      // 第二個link的長度
@@ -53,11 +53,11 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 2.00;  // 將每步切成幾部分
+int interpolate_num = 5.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
 
-int step_delay = 1000;  //每一步之間的間隔
+int step_delay = 200;  //每一步之間的間隔
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 
@@ -93,7 +93,7 @@ void loop() {
 //==============================================================================
 void move(float dir) {
   for (int step = 0; step < moving_cycle_lenth; step++) {
-    Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n", step);
+    // Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n", step);
     interpolate(step, radian_dir);
     delay(step_delay);
   }
@@ -168,7 +168,7 @@ void angle2servo(int leg_num, float j1, float j2, float j3) {
     board1.setPWM(0, 0, pwm_j1);
     board1.setPWM(1, 0, pwm_j2);
     board1.setPWM(2, 0, pwm_j3);
-    Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
+    // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
   }
 }
 //==============================================================================
