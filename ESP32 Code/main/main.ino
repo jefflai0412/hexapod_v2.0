@@ -163,8 +163,8 @@ void angle2servo(int leg_num, float j1, float j2, float j3) {
   // test
   if (leg_num == 0) {
     int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    int pwm_j2 = (j2 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    int pwm_j3 = (j3 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j2 = (j2 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j3 = (j3 + M_PI) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
     board1.setPWM(0, 0, pwm_j1);
     board1.setPWM(1, 0, pwm_j2);
     board1.setPWM(2, 0, pwm_j3);

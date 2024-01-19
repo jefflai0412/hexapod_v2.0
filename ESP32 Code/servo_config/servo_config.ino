@@ -8,7 +8,6 @@
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 
-//stupid joy
 
 
 void setup() {
@@ -21,7 +20,7 @@ void setup() {
 void loop() {
   // sweep(2);
   // assemble();
-  angle(1);
+  angle(2);
 }
 
 void limit_test() {
@@ -61,7 +60,7 @@ void angle(int servo_num) {
   if (Serial.available()) {
       char command = Serial.read();
       if (command == '0') {
-        board1.setPWM(servo_num, 0, SERVOMIN);  // SERVOMIN(J1:-90, J2:-90, J3:-180)
+        board1.setPWM(servo_num, 0, SERVOMIN);  // SERVOMIN(J1:-90, J2:90, J3:-180)
         Serial.println("SERVOMIN(J1:-90, J2:-90, J3:-180)");
       }
       if (command == '1') {
@@ -69,7 +68,7 @@ void angle(int servo_num) {
         Serial.println("(J1:0, J2:0, J3:-90)");
       }
       if (command == '2') {
-        board1.setPWM(servo_num, 0, SERVOMAX);  // (J1:90, J2:90, J3:0)
+        board1.setPWM(servo_num, 0, SERVOMAX);  // (J1:90, J2:-90, J3:0)
         Serial.println("SERVOMAX(J1:90, J2:90, J3:0)");
       }
       
