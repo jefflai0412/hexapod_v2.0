@@ -7,7 +7,7 @@
 //                             servo defines
 //==============================================================================
 #define SERVO_FREQ 50  // servo frequency
-#define SERVOMIN 77   // the minimun physical limit(after testing)
+#define SERVOMIN 77    // the minimun physical limit(after testing)
 #define SERVOMAX 485
 
 #define servo1_1 0
@@ -53,13 +53,14 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 5.00;  // 將每步切成幾部分
+int interpolate_num = 20.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
 
 int step_delay = 200;  //每一步之間的間隔
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
+Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
 
 //==============================================================================
 //                                  END
@@ -80,10 +81,12 @@ void setup() {
   Serial.begin(9600);
   board1.begin();
   board1.setPWMFreq(SERVO_FREQ);
+  board2.begin();
+  board2.setPWMFreq(SERVO_FREQ);
 }
 
 void loop() {
-  move(M_PI / 2);  // 直走
+  move(radian_dir);  // 直走
 }
 
 
@@ -160,14 +163,22 @@ void coor2angle(int leg_num, float X, float Y, float Z) {
 //==============================================================================
 
 void angle2servo(int leg_num, float j1, float j2, float j3) {
-  // test
-  if (leg_num == 0) {
+  if (leg_num % 2 == 0) {  // right legs
     int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
     int pwm_j2 = (j2 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
     int pwm_j3 = (j3 + M_PI) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    board1.setPWM(0, 0, pwm_j1);
-    board1.setPWM(1, 0, pwm_j2);
-    board1.setPWM(2, 0, pwm_j3);
+    board1.setPWM(0 + leg_num * 3, 0, pwm_j1);
+    board1.setPWM(1 + leg_num * 3, 0, pwm_j2);
+    board1.setPWM(2 + leg_num * 3, 0, pwm_j3);
+    // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
+  }
+  if (leg_num % 2 != 0) {  // left legs
+    int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j2 = (j2 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j3 = (j3 + M_PI) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    board2.setPWM(0 + leg_num * 3, 0, pwm_j1);
+    board2.setPWM(1 + leg_num * 3, 0, pwm_j2);
+    board2.setPWM(2 + leg_num * 3, 0, pwm_j3);
     // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
   }
 }
