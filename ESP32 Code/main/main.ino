@@ -7,8 +7,8 @@
 //                             servo defines
 //==============================================================================
 #define SERVO_FREQ 50  // servo frequency
-#define SERVOMIN 77    // the minimun physical limit(after testing)
-#define SERVOMAX 485
+#define SERVOMIN 97    // the minimun physical limit(after testing)
+#define SERVOMAX 505
 //==============================================================================
 //                                  END
 //==============================================================================
@@ -34,11 +34,11 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 20.00;  // 將每步切成幾部分
+int interpolate_num = 10.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
 
-int step_delay = 100;  //  每一步之間的間隔
+int step_delay = 200;  //  每一步之間的間隔
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
@@ -153,7 +153,7 @@ void angle2servo(int leg_num, float j1, float j2, float j3) {
     board1.setPWM(2 + leg_num * 3, 0, pwm_j3);
     // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
   }
-  if (leg_num >= 3) {  // left legs
+  else { // left legs
     int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
     int pwm_j2 = (j2 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
     int pwm_j3 = (j3 + M_PI) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
