@@ -3,10 +3,11 @@
 #include "math.h"
 
 #define SERVO_FREQ 50  // servo frequency
-#define SERVOMIN 97    // the minimun physical limit(after testing)
-#define SERVOMAX 505
+#define SERVOMIN 98    // the minimun physical limit(after testing)
+#define SERVOMAX 490
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
+Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
 
 
 
@@ -14,6 +15,8 @@ void setup() {
   Serial.begin(9600);
   board1.begin();
   board1.setPWMFreq(SERVO_FREQ);
+  board2.begin();
+  board2.setPWMFreq(SERVO_FREQ);
 }
 
 
@@ -27,7 +30,7 @@ void limit_test() {
   if (Serial.available()) {
     char command = Serial.read();
     if (command == '+') {
-      // SERVOMIN += 5; 
+      // SERVOMIN += 5;
       Serial.println(SERVOMIN);
     }
     if (command == '-') {
@@ -58,20 +61,24 @@ void assemble() {
 
 void angle(int servo_num) {
   if (Serial.available()) {
-      char command = Serial.read();
-      if (command == '0') {
-        board1.setPWM(servo_num, 0, SERVOMIN);  // SERVOMIN(J1:-90, J2:90, J3:-180)
-        Serial.println("SERVOMIN(J1:-90, J2:90, J3:-180)");
-      }
-      if (command == '1') {
-        board1.setPWM(servo_num, 0, (SERVOMIN+SERVOMAX) / 2);  // (J1:0, J2:0, J3:-90)
-        Serial.println("(J1:0, J2:0, J3:-90)");
-      }
-      if (command == '2') {
-        board1.setPWM(servo_num, 0, SERVOMAX);  // (J1:90, J2:-90, J3:0)
-        Serial.println("SERVOMAX(J1:90, J2:-90, J3:0)");
-      }
-      
-      
+    char command = Serial.read();
+    if (command == '0') {
+      board1.setPWM(servo_num, 0, SERVOMIN);  // right legs(J1:-90, J2:90, J3:-180)
+      board2.setPWM(servo_num, 0, SERVOMIN);  // left legs(J1:90, J2:-90, J3:0)
+      Serial.println("right legs(J1:-90, J2:90, J3:-180)");
+      Serial.println("left legs(J1:90, J2:-90, J3:0)");
+    }
+    if (command == '1') {
+      board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);  // right legs(J1:0, J2:0, J3:-90)
+      board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);  // left legs(J1:0, J2:0, J3:-90)
+      Serial.println("right legs(J1:0, J2:0, J3:-90)");
+      Serial.println("left legs(J1:0, J2:0, J3:-90)");
+    }
+    if (command == '2') {
+      board1.setPWM(servo_num, 0, SERVOMAX);  // right legs(J1:90, J2:-90, J3:0)
+      board2.setPWM(servo_num, 0, SERVOMAX);  // left legs(J1:-90, J2:90, J3:-180)
+      Serial.println("right legs(J1:90, J2:-90, J3:0)");
+      Serial.println("left legs(J1:-90, J2:90, J3:-180)");
+    }
   }
 }
