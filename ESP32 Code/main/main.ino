@@ -34,7 +34,7 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 10.00;  // 將每步切成幾部分
+int interpolate_num = 20.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI/4;  // 行進方向
 
@@ -78,6 +78,7 @@ void loop() {
 void move(float dir) {
   for (int step = 0; step < moving_cycle_lenth; step++) {
     Serial.printf("-----------------------------------------------\n-----------------------%d-----------------------\n-----------------------------------------------\n", step);
+    delay(500);
     interpolate(step, radian_dir);
     delay(step_delay);
   }
@@ -146,7 +147,7 @@ void coor2angle(int leg_num, float X, float Y, float Z) {
 void angle2servo(int leg_num, float j1, float j2, float j3) {
   if (leg_num < 3) {  // right legs
     int pwm_j1 = (j1 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    int pwm_j2 = (j2 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j2 = (j2 + M_PI / 2) / (M_PI) * (SERVOMIN - SERVOMAX) + SERVOMAX;
     int pwm_j3 = (j3 + M_PI) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
     board1.setPWM(0 + leg_num * 3, 0, pwm_j1);
     board1.setPWM(1 + leg_num * 3, 0, pwm_j2);
@@ -154,9 +155,9 @@ void angle2servo(int leg_num, float j1, float j2, float j3) {
     // Serial.printf("%d|| j1:%f, j2:%f, j3:%f\n", leg_num, j1, j2, j3);
   }
   else { // left legs
-    int pwm_j1 = (j1 - M_PI / 2) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    int pwm_j2 = (j2 + M_PI / 2) / M_PI * (SERVOMAX - SERVOMIN) + SERVOMIN;
-    int pwm_j3 = (j3) / (-M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j1 = ((M_PI-j1) - M_PI / 2) / (M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
+    int pwm_j2 = ((M_PI-j2) - M_PI / 2) / (M_PI) * (SERVOMIN - SERVOMAX) + SERVOMAX;
+    int pwm_j3 = ((-M_PI-j3) + M_PI) / (M_PI) * (SERVOMAX - SERVOMIN) + SERVOMIN;
     board2.setPWM(0 + (leg_num-3) * 3, 0, pwm_j1);
     board2.setPWM(1 + (leg_num-3) * 3, 0, pwm_j2);
     board2.setPWM(2 + (leg_num-3) * 3, 0, pwm_j3);
