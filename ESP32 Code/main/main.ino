@@ -32,9 +32,9 @@ float moving_cycle_lenth = 4;  // 整個循環的長度
 
 int interpolate_num = 20.00;  // 將每步切成幾部分
 
-float radian_dir = -M_PI / 2;  // 行進方向
+float radian_dir = 0;  // 行進方向
 
-int step_delay = 100;  //  每一步之間的間隔
+int step_delay = 50;  //  每一步之間的間隔
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
@@ -95,10 +95,16 @@ void interpolate(int step_num, float radian_dir) {
     { 0, 0, step_height }
   };
 
-  // 判斷上一步是第幾步
+  // 判斷上一步是第幾步(第一組)
   int last_step_num = step_num - 1;
   if (last_step_num == -1)  // 0的上一步是3
     last_step_num = 3;
+
+  // 領先第一組兩個步(第二組)
+  int group2_step_num = step_num + 2;
+  int group2_last_step_num = group2_step_num - 1;
+  if (group2_last_step_num == -1)  // 0的上一步是3
+    group2_last_step_num = 3;
 
   // 計算兩步之間的差值
   float difference[3] = {
@@ -106,17 +112,43 @@ void interpolate(int step_num, float radian_dir) {
     moving_cycle[step_num][1] - moving_cycle[last_step_num][1],
     moving_cycle[step_num][2] - moving_cycle[last_step_num][2]
   };
+  // 第二組difference
+  float group2_difference[3] = {
+    moving_cycle[group2_step_num][0] - moving_cycle[group2_last_step_num][0],
+    moving_cycle[group2_step_num][1] - moving_cycle[group2_last_step_num][1],
+    moving_cycle[group2_step_num][2] - moving_cycle[group2_last_step_num][2]
+  };
+
   // interpolation
   for (int i = 1; i <= interpolate_num; i++) {
     for (int leg_num = 0; leg_num < 6; leg_num++) {
-      if (leg_num < 3) {
+
+      if (leg_num < 3 && leg_num % 2 == 1) {  // 右腳，第二組group2
+        coor2angle(leg_num,
+                   initial_point[0][0] + moving_cycle[group2_last_step_num][0] + group2_difference[0] * (i / static_cast<float>(interpolate_num)),
+
+                   initial_point[0][1] + moving_cycle[group2_last_step_num][1] + group2_difference[1] * (i / static_cast<float>(interpolate_num)),
+
+                   initial_point[0][2] + moving_cycle[group2_last_step_num][2] + group2_difference[2] * (i / static_cast<float>(interpolate_num)));
+      }
+      if (leg_num < 3 && leg_num % 2 == 0) {   // 右腳，第一組group1
         coor2angle(leg_num,
                    initial_point[0][0] + moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
 
                    initial_point[0][1] + moving_cycle[last_step_num][1] + difference[1] * (i / static_cast<float>(interpolate_num)),
 
                    initial_point[0][2] + moving_cycle[last_step_num][2] + difference[2] * (i / static_cast<float>(interpolate_num)));
-      } else {
+      }
+
+      if (leg_num >= 3 && leg_num % 2 == 1) {  // 左腳，第二組group2
+        coor2angle(leg_num,
+                   initial_point[1][0] + moving_cycle[group2_last_step_num][0] + group2_difference[0] * (i / static_cast<float>(interpolate_num)),
+
+                   initial_point[1][1] + moving_cycle[group2_last_step_num][1] + group2_difference[1] * (i / static_cast<float>(interpolate_num)),
+
+                   initial_point[1][2] + moving_cycle[group2_last_step_num][2] + group2_difference[2] * (i / static_cast<float>(interpolate_num)));
+      }
+      if (leg_num >= 3 && leg_num % 2 == 1) {  // 左腳，第一組group1
         coor2angle(leg_num,
                    initial_point[1][0] + moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
 
