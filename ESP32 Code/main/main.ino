@@ -30,9 +30,9 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 20.00;  // 將每步切成幾部分
+int interpolate_num = 10.00;  // 將每步切成幾部分
 
-float radian_dir = 0;  // 行進方向
+float radian_dir = M_PI / 2;  // 行進方向
 
 int step_delay = 50;  //  每一步之間的間隔
 
@@ -102,9 +102,12 @@ void interpolate(int step_num, float radian_dir) {
 
   // 領先第一組兩個步(第二組)
   int group2_step_num = step_num + 2;
-  int group2_last_step_num = group2_step_num - 1;
-  if (group2_last_step_num == -1)  // 0的上一步是3
-    group2_last_step_num = 3;
+  int group2_last_step_num = last_step_num + 2;
+  if (group2_step_num > 3) 
+    group2_step_num = group2_step_num - 4;
+  if (group2_last_step_num > 3)
+    group2_last_step_num = group2_last_step_num - 4;
+
 
   // 計算兩步之間的差值
   float difference[3] = {
@@ -148,7 +151,7 @@ void interpolate(int step_num, float radian_dir) {
 
                    initial_point[1][2] + moving_cycle[group2_last_step_num][2] + group2_difference[2] * (i / static_cast<float>(interpolate_num)));
       }
-      if (leg_num >= 3 && leg_num % 2 == 1) {  // 左腳，第一組group1
+      if (leg_num >= 3 && leg_num % 2 == 0) {  // 左腳，第一組group1
         coor2angle(leg_num,
                    initial_point[1][0] + moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
 
