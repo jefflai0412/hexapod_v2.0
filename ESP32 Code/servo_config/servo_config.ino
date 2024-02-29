@@ -22,8 +22,8 @@ void setup() {
 
 void loop() {
   // sweep(2);
-  // assemble();
-  angle(2);
+  assemble();
+  // angle(2);
 }
 
 void limit_test() {
@@ -53,9 +53,23 @@ void sweep(int servo) {
 }
 
 void assemble() {
-  for (int servo_num = 0; servo_num < 15; servo_num++) {
-    board1.setPWM(servo_num, 0, SERVOMAX);
-    Serial.printf("servo_%d set to SERVOMAX\n", servo_num);
+  // j1
+  for (int servo_num = 0; servo_num < 9; servo_num+=3) {
+    board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
+  }
+  // j2
+    for (int servo_num = 1; servo_num < 9; servo_num+=3) {
+    board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
+  }
+  // j3
+    for (int servo_num = 2; servo_num < 9; servo_num+=3) {
+    board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
+    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
   }
 }
 
