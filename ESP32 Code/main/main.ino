@@ -15,6 +15,8 @@
 //==============================================================================
 //                               全域變數
 //==============================================================================
+const int servo_stop = 26;
+
 // 待修改 (末端到j1的相對座標)
 float initial_point[6][3] = {
   { 57.385, 0, -76.814 },  // right legs
@@ -30,11 +32,11 @@ float l3 = 60.612;  // 第三個link的長度
 
 float moving_cycle_lenth = 4;  // 整個循環的長度
 
-int interpolate_num = 10.00;  // 將每步切成幾部分
+int interpolate_num = 5.00;  // 將每步切成幾部分
 
 float radian_dir = M_PI / 2;  // 行進方向
 
-int step_delay = 50;  //  每一步之間的間隔
+int step_delay = 0;  //  每一步之間的間隔
 
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
@@ -60,9 +62,23 @@ void setup() {
   board1.setPWMFreq(SERVO_FREQ);
   board2.begin();
   board2.setPWMFreq(SERVO_FREQ);
+
+  pinMode(servo_stop, OUTPUT);
 }
 
 void loop() {
+  if (Serial.available()) {
+    char command = Serial.read();
+    if (command == 't') {
+      digitalWrite(servo_stop, HIGH);
+      Serial.println("servos terminated");
+    }
+
+    if (command == 's') {
+      digitalWrite(servo_stop, LOW);
+      Serial.println("servos started");
+    }
+  }
   move(radian_dir);  // 直走
 }
 
@@ -103,7 +119,7 @@ void interpolate(int step_num, float radian_dir) {
   // 領先第一組兩個步(第二組)
   int group2_step_num = step_num + 2;
   int group2_last_step_num = last_step_num + 2;
-  if (group2_step_num > 3) 
+  if (group2_step_num > 3)
     group2_step_num = group2_step_num - 4;
   if (group2_last_step_num > 3)
     group2_last_step_num = group2_last_step_num - 4;
@@ -134,7 +150,7 @@ void interpolate(int step_num, float radian_dir) {
 
                    initial_point[0][2] + moving_cycle[group2_last_step_num][2] + group2_difference[2] * (i / static_cast<float>(interpolate_num)));
       }
-      if (leg_num < 3 && leg_num % 2 == 0) {   // 右腳，第一組group1
+      if (leg_num < 3 && leg_num % 2 == 0) {  // 右腳，第一組group1
         coor2angle(leg_num,
                    initial_point[0][0] + moving_cycle[last_step_num][0] + difference[0] * (i / static_cast<float>(interpolate_num)),
 

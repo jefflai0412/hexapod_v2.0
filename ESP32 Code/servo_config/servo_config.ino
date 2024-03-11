@@ -10,6 +10,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
 
 
+const int servo_stop = 26;
 
 void setup() {
   Serial.begin(9600);
@@ -17,13 +18,25 @@ void setup() {
   board1.setPWMFreq(SERVO_FREQ);
   board2.begin();
   board2.setPWMFreq(SERVO_FREQ);
+
+  pinMode(servo_stop, OUTPUT);
 }
 
 
 void loop() {
-  // sweep(2);
+  if (Serial.available()) {
+    char command = Serial.read();
+    if (command == 't') {
+      digitalWrite(servo_stop, HIGH);
+      Serial.println("servos terminated");
+    }
+
+    if (command == 's') {
+      digitalWrite(servo_stop, LOW);
+      Serial.println("servos started");
+    }
+  }
   assemble();
-  // angle(2);
 }
 
 void limit_test() {
@@ -54,22 +67,22 @@ void sweep(int servo) {
 
 void assemble() {
   // j1
-  for (int servo_num = 0; servo_num < 9; servo_num+=3) {
+  for (int servo_num = 0; servo_num < 9; servo_num += 3) {
     board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
     board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
-    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
+    // Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
   }
   // j2
-    for (int servo_num = 1; servo_num < 9; servo_num+=3) {
+  for (int servo_num = 1; servo_num < 9; servo_num += 3) {
     board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
     board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
-    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
+    // Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
   }
   // j3
-    for (int servo_num = 2; servo_num < 9; servo_num+=3) {
+  for (int servo_num = 2; servo_num < 9; servo_num += 3) {
     board1.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
     board2.setPWM(servo_num, 0, (SERVOMIN + SERVOMAX) / 2);
-    Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
+    // Serial.printf("j1 set to (SERVOMIN + SERVOMAX) / 2)\n");
   }
 }
 
